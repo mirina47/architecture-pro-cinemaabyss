@@ -1,0 +1,49 @@
+@startuml CinemaAbyss_C4_Container
+!include ../template/C4_Container.puml
+
+title To-Be Диаграмма контейнеров CinemaAbyss (MVP)
+
+Person(user, "Пользователь", "Использует мобильное устройство/ноутбук/смарт ТВ")
+
+System_Boundary(cinema_abyss_system, "CinemaAbyss") {
+    Container(proxy_service, "Proxy Service", "NestJS","Маршрутизация запросов между монолитом и микросервисами")
+    Container(monolith, "Монолит", "Go", "Управляет пользователями, фильмами, подписками, платежами. Хранит основную бизнес-логику")
+    Container(movies_service, "Movies Service", "Go", "Управляет метаданными фильмов (жанры, актёры, рейтинги). Постепенно заменяет часть монолита")
+    Container(events_service, "Events Service", "NestJS", "Обрабатывает коммуникацию между сервисами на основе событий с использованием Kafka")
+    ContainerDb(db, "Database", "PostgreSQL", "Хранит данные следующих сущностей: платежи, пользователи, видео, подписки, скидки, метаданные о фильмах (жанры, актёры, оценки)")
+    Container(rabbit_mq_broker, "RabbitMQ Broker", "RabbitMQ", "Обрабатывает коммуникацию между монолитом и рекомендательной системой")
+    Container(kafka_broker, "Kafka Broker", "Kafka", "Обрабатывает коммуникацию между сервисами")
+}
+
+System_Ext(payment_system, "Платёжная система", "Обрабатывает платежи")
+System_Ext(online_cinema, "Онлайн-кинотеатры", "Источники видеоконтента")
+System_Ext(s3, "S3-хранилище", "Хранит файлы, обложки, постеры")
+System_Ext(recommendation_system, "Рекомендательная система", "Формирует рекомендации для пользователей")
+
+' Пользователь
+Rel(user, proxy_service, "Оплачивает подписки, просматривает контент", "HTTP/HTTPS")
+
+' Proxy Service
+Rel(proxy_service, monolith, "Маршрутизация API-запросов", "REST API")
+Rel(proxy_service, movies_service, "Запросы метаданных фильмов", "REST API")
+
+' Монолит
+Rel(monolith, db, "Извлекает и записывает данные", "SQL")
+Rel(monolith, payment_system, "Проводит платежи", "REST API")
+Rel(monolith, s3, "Извлекает данные фильмов", "HTTP/HTTPS")
+Rel(monolith, rabbit_mq_broker, "Публикует события", "AMQP")
+Rel(monolith, online_cinema, "Запрашивает контент", "REST API")
+
+' Movies Service
+Rel(movies_service, db, "Извлекает и записывает данные", "SQL/TypeORM")
+
+' Event Service
+Rel(events_service, db, "Извлекает и записывает данные", "SQL/TypeORM")
+
+' RabbitMQ
+Rel(rabbit_mq_broker, recommendation_system, "Передаёт события", "AMQP")
+
+' Kafka
+Rel(events_service, kafka_broker, "Публикует и читает события", "Kafka Producer/Consumer")
+
+@enduml
