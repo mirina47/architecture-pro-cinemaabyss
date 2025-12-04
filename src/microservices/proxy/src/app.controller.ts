@@ -6,17 +6,17 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get('health')
-  async getHealth(): Promise<boolean> {
-    return true;
+  async getHealth(): Promise<any> {
+    return { status: true };
   }
 
   @Get('api/movies')
-  async getMovies(): Promise<boolean> {
+  async getMovies(): Promise<any> {
     return await this.appService.getMovies();
   }
 
   @Get('api/users')
-  async getUsers(): Promise<boolean> {
+  async getUsers(): Promise<any> {
     return await this.appService.getUsers();
   }
 }
