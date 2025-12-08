@@ -18,4 +18,4 @@ RUN npm run build
 # Expose the port the app runs on
 EXPOSE 8000
 
-CMD ["sh", "-c", "npm run start:prod"]
+CMD ["node", "dist/main.js"]
