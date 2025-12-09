@@ -12,18 +12,11 @@ async function bootstrap() {
   app.use(morgan('combined'));
 
   app.use(
-    bodyParser.json({
-      verify: (req, res, buf) => {
-        console.log('Raw JSON body:', buf.toString());
-      },
-    }),
-  );
-
-  app.use(
     bodyParser.text({
       type: '*/*',
-      verify: (req, res, buf) => {
-        console.log('Raw text body:', buf.toString());
+      verify: (req: any, res, buf) => {
+        req.rawBody = buf.toString();
+        console.log('Raw text body:', req.rawBody);
       },
     }),
   );
