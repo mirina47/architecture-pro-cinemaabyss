@@ -9,6 +9,13 @@ async function bootstrap() {
     transport: Transport.KAFKA,
     options: {
       client: { brokers: ['kafka:9092'] },
+      consumer: {
+        groupId: 'events-service-group',
+        allowAutoTopicCreation: true,
+      },
+      producer: {
+        allowAutoTopicCreation: true,
+      },
     },
   });
 
