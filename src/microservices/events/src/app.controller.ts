@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller('api/events')
@@ -12,21 +12,21 @@ export class AppController {
 
   @Post('movie')
   async createMovieEvent(@Body() dto: any): Promise<any> {
-    console.log('movie', dto);
+    console.log('movie dto', dto);
     await this.appService.emitEvent('movie-events', dto);
     return { status: 'success' };
   }
 
   @Post('user')
   async createUserEvent(@Body() dto: any): Promise<any> {
-    console.log('user', dto);
+    console.log('user dto', dto);
     await this.appService.emitEvent('user-events', dto);
     return { status: 'success' };
   }
 
   @Post('payment')
-  async createPaymentEvent(@Body() dto: any): Promise<any> {
-    console.log('payment', dto);
+  async createPaymentEvent(@Req() req, @Body() dto: any): Promise<any> {
+    console.log('payment dto', dto);
     await this.appService.emitEvent('payment-events', dto);
     return { status: 'success' };
   }

@@ -1,26 +1,32 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Transport } from '@nestjs/microservices';
-import { json, urlencoded } from 'express';
+import morgan from 'morgan';
+import bodyParser from 'body-parser';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-
-  // Нужно, чтобы body-parser не ломался сразу
-  app.use((req, res, next) => {
-    let data = '';
-    req.on('data', chunk => {
-      data += chunk;
-    });
-    req.on('end', () => {
-      console.log('Raw request body:', data);
-      next();
-    });
+  const app = await NestFactory.create(AppModule, {
+    rawBody: true,
   });
 
-  // Обычные парсеры Nest
-  app.use(json());
-  app.use(urlencoded({ extended: true }));
+  app.use(morgan('combined'));
+
+  app.use(
+    bodyParser.json({
+      verify: (req, res, buf) => {
+        console.log('Raw JSON body:', buf.toString());
+      },
+    }),
+  );
+
+  app.use(
+    bodyParser.text({
+      type: '*/*',
+      verify: (req, res, buf) => {
+        console.log('Raw text body:', buf.toString());
+      },
+    }),
+  );
 
   app.connectMicroservice({
     transport: Transport.KAFKA,
