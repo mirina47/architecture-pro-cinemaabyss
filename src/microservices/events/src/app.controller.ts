@@ -12,18 +12,21 @@ export class AppController {
 
   @Post('movie')
   async createMovieEvent(@Body() dto: any): Promise<any> {
+    console.log('movie', dto);
     await this.appService.emitEvent('movie-events', dto);
     return { status: 'success' };
   }
 
   @Post('user')
   async createUserEvent(@Body() dto: any): Promise<any> {
+    console.log('user', dto);
     await this.appService.emitEvent('user-events', dto);
     return { status: 'success' };
   }
 
   @Post('payment')
   async createPaymentEvent(@Body() dto: any): Promise<any> {
+    console.log('payment', dto);
     await this.appService.emitEvent('payment-events', dto);
     return { status: 'success' };
   }
