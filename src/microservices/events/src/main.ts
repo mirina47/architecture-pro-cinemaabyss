@@ -5,6 +5,14 @@ import { Transport } from '@nestjs/microservices';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.use((req, res, next) => {
+    console.log('Request:', req.method, req.url);
+    if (req.body) {
+      console.log('Request body:', req.body);
+    }
+    next();
+  });
+
   app.connectMicroservice({
     transport: Transport.KAFKA,
     options: {
