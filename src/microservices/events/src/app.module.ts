@@ -12,7 +12,7 @@ import { EventsConsumer } from './kafka.consumer';
         transport: Transport.KAFKA,
         options: {
           client: { brokers: ['kafka:9092'] },
-          consumer: { groupId: 'events-producer-group' },
+          consumer: { groupId: 'events-service-group' },
         },
       },
     ]),
